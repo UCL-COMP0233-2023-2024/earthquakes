@@ -3,6 +3,7 @@
 # However, we will use a more powerful and simpler library called requests.
 # This is external library that you may need to install first.
 import requests
+import json
 
 
 def get_data():
@@ -31,27 +32,42 @@ def get_data():
 
     # We need to interpret the text to get values that we can work with.
     # What format is the text in? How can we load the values?
-    return ...
+    return json.loads(text)
 
-def count_earthquakes(data):
+def count_earthquakes(data:dict) -> int:
     """Get the total number of earthquakes in the response."""
-    return ...
+    return data['metadata']['count']
 
 
-def get_magnitude(earthquake):
+def get_magnitude(earthquake:dict) -> float:
     """Retrive the magnitude of an earthquake item."""
-    return ...
+    return earthquake['properties']['mag']
 
 
-def get_location(earthquake):
+def get_location(earthquake:dict) -> list[float]:
     """Retrieve the latitude and longitude of an earthquake item."""
     # There are three coordinates, but we don't care about the third (altitude)
-    return ...
+    return earthquake['geometry']['coordinates'][:2]
 
 
-def get_maximum(data):
+def get_maximum(data:dict) -> list[float,list[float]]:
     """Get the magnitude and location of the strongest earthquake in the data."""
-    ...
+
+    event_mags = []
+    # Add all event magnitudes in dataset to a list
+    for event_ind in range(count_earthquakes(data)):
+        feature = data['features'][event_ind]
+        event_mags.append(get_magnitude(feature))
+    
+    # Find the index and value of the event with the largest magnitude
+    max_magnitude = max(event_mags)
+    max_mag_ind = event_mags.index(max_magnitude)
+   
+    # Find largest magnitude event's coordinates 
+    max_mag_event = data["features"][max_mag_ind]
+    max_location = get_location(max_mag_event)
+
+    return [max_magnitude, max_location]
 
 
 # With all the above functions defined, we can now call them and get the result
