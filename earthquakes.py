@@ -1,3 +1,4 @@
+# %%
 import json
 # The Python standard library includes some functionality for communicating
 # over the Internet.
@@ -79,3 +80,55 @@ data = get_data()
 print(f"Loaded {count_earthquakes(data)}")
 max_magnitude, max_location = get_maximum(data)
 print(f"The strongest earthquake was at {max_location} with magnitude {max_magnitude}")
+
+# %%
+import datetime
+
+def year_of_time(time):
+    """Get the year of a time string."""
+    return datetime.datetime.fromtimestamp(time / 1000).year
+
+def year_of_earthquake(earthquake):
+    """Get the year of an earthquake item."""
+    return year_of_time(earthquake["properties"]["time"])
+
+
+# %%
+def freq_earthquakes_per_year(data):
+    years = {}
+    for earthquake in data["features"]:
+
+        year = year_of_earthquake(earthquake)
+        if year in years.keys():
+            years[year] += 1
+        else:
+            years[year] = 1
+    return years
+earthquakes_per_year=freq_earthquakes_per_year(data)
+earthquakes_per_year
+
+# %%
+def avg_earthquake_mag_by_year(data):
+    earthquakes_per_year = freq_earthquakes_per_year(data)
+    mags={}
+    for earthquake in data["features"]:
+        year = year_of_earthquake(earthquake)
+        if year in mags.keys():
+            mags[year_of_earthquake(earthquake)] += get_magnitude(earthquake)
+        else:   
+            mags[year_of_earthquake(earthquake)] = get_magnitude(earthquake)
+    for year in earthquakes_per_year.keys():
+        mags[year]/=earthquakes_per_year[year]
+    return mags
+avg_earthquake_mags = avg_earthquake_mag_by_year(data)
+
+# %%
+import matplotlib.pyplot as plt
+fig, (ax1, ax2) = plt.subplots(1, 2)
+
+ax1.plot(earthquakes_per_year.keys(),earthquakes_per_year.values())
+ax2.plot(avg_earthquake_mags.keys(),avg_earthquake_mags.values())
+
+fig.show()
+
+
