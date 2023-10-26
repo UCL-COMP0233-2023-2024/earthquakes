@@ -106,8 +106,59 @@ def plot_number_per_year(earthquakes):
     plt.ylabel('number')
     plt.show()
 
+def plot_Peak_mag_per_year(earthquakes):
+    dict = get_magnitudes_per_year(earthquakes)
+    year_list =[]
+    max_list=[]
+    for item in dict:
+        year_list.append(item)
+    
+    year_list.sort()
 
+    for year in year_list:
+        mag_list = dict[year]
+        value = 0
+        for mag in mag_list:
+            if mag>value:
+                value=mag
+        max_list.append(value)
+    year_list=np.array(year_list)
+    max_list = np.array(max_list)
+    print(year_list,max_list)
+    plt.title('Max magnitude per year')
+    plt.plot(year_list,max_list)
+    plt.legend()
+    plt.xlabel('year')
+    plt.xticks(year_list,rotation=45)
+    plt.ylabel('number')
+    plt.show()
 
+def plot_smallest_mag_per_year(earthquakes):
+    dict = get_magnitudes_per_year(earthquakes)
+    year_list =[]
+    min_list=[]
+    for item in dict:
+        year_list.append(item)
+    
+    year_list.sort()
+
+    for year in year_list:
+        mag_list = dict[year]
+        value = mag_list[0]
+        for mag in mag_list:
+            if mag<value:
+                value=mag
+        min_list.append(value)
+    year_list=np.array(year_list)
+    min_list = np.array(min_list)
+    print(year_list,min_list)
+    plt.title('Min magnitude per year')
+    plt.plot(year_list,min_list)
+    plt.legend()
+    plt.xlabel('year')
+    plt.xticks(year_list,rotation=45)
+    plt.ylabel('number')
+    plt.show()
 
 # Get the data we will work with
 quakes = get_data()['features']
@@ -117,3 +168,7 @@ quakes = get_data()['features']
 plot_number_per_year(quakes)
 plt.clf()  # This clears the figure, so that we don't overlay the two plots
 plot_average_magnitude_per_year(quakes)
+plt.clf()
+plot_Peak_mag_per_year(quakes)
+plt.clf()
+plot_smallest_mag_per_year(quakes)
