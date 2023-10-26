@@ -56,7 +56,7 @@ def get_magnitude(earthquake):
 def get_location(earthquake):
     """Retrieve the latitude and longitude of an earthquake item."""
     # There are three coordinates, but we don't care about the third (altitude)
-    return earthquake["geometry"]["coordinates"]
+    return (earthquake["geometry"]["coordinates"][0],earthquake["geometry"]["coordinates"][1])
 
 
 def get_maximum(data):
