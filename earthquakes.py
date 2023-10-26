@@ -28,10 +28,10 @@ def get_data():
 
     text = response.text
     dic = json.loads(text)
-    #dum = json.dumps(json.loads(text))
-    # f2 = open('Earthquake.json', 'w')
-    # f2.write(dum)
-    # f2.close()
+    dum = json.dumps(json.loads(text))
+    f2 = open('Earthquake.json', 'w')
+    f2.write(dum)
+    f2.close()
 
 
     # To understand the structure of this text, you may want to save it
@@ -76,6 +76,6 @@ def get_maximum(data):
 # With all the above functions defined, we can now call them and get the result
 data = get_data()
 print(f"Loaded {count_earthquakes(data)}")
-print(data)
+# print(data)
 max_magnitude, max_location = get_maximum(data)
 print(f"The strongest earthquake was at {max_location} with magnitude {max_magnitude}")
