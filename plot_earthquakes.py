@@ -76,7 +76,6 @@ def plot_average_magnitude_per_year(earthquakes):
     avg_list = np.array(avg_list)
     print(year_list,avg_list)
     plt.title('number_per_year')
-    #plt.figure(figsize=(10,10))
     plt.plot(year_list,avg_list)
     plt.legend()
     plt.xlabel('year')
@@ -99,7 +98,7 @@ def plot_number_per_year(earthquakes):
     num_list = np.array(num_list)
     print(year_list,num_list)
     plt.title('number_per_year')
-    #plt.figure(figsize=(10,10))
+
     plt.plot(year_list,num_list)
     plt.legend()
     plt.xlabel('year')
