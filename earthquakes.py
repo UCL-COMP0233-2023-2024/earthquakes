@@ -88,7 +88,18 @@ def time_earthquakes(data):
         time.append(t)
     return time
 
+dates = time_earthquakes(data)
+print(dates)
 
-#print(data["features"])
+def count_events_in_time_range(event_times, start_time, end_time):
+    event_count = 0
+    for time in event_times:
+        if start_time <= time <= end_time:
+            event_count += 1
+    return event_count
 
-print(time_earthquakes(data))
+event_times = dates
+start_time = "2002"
+end_time = "2003"
+count = count_events_in_time_range(event_times, start_time, end_time)
+print(f"Number of events between {start_time} and {end_time}: {count}")
