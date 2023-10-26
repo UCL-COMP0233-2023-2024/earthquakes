@@ -69,13 +69,13 @@ def get_maximum(data):
         if mag>=max:
             max = mag
             max_posi = index
-        index = index+1
+        index = index + 1
     return get_magnitude(data["features"][max_posi]), get_location(data["features"][max_posi])
 
 
 # With all the above functions defined, we can now call them and get the result
 data = get_data()
 print(f"Loaded {count_earthquakes(data)}")
-#print(data)
+print(data)
 max_magnitude, max_location = get_maximum(data)
 print(f"The strongest earthquake was at {max_location} with magnitude {max_magnitude}")
