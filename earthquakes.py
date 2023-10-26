@@ -64,6 +64,7 @@ def get_maximum(data):
     max = 0 
     max_posi = 0
     index = 0
+    max_list=[]
     for earth in data["features"] :
         mag = earth["properties"]["mag"]
         if mag>=max:
