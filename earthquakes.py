@@ -25,10 +25,11 @@ def get_data():
     # The response we get back is an object with several fields.
     # The actual contents we care about are in its text field:
     text = response.text
+    # could also do response.json instead
     responseJson = json.loads(text)
     
     with open("response.json", "w") as file:
-        json.dump(responseJson, file, indent=120)
+        json.dump(responseJson, file, indent=4)
     # To understand the structure of this text, you may want to save it
     # to a file and open it in VS Code or a browser.
     # See the README file for more information.
@@ -58,6 +59,7 @@ def get_maximum(data):
     maxMag = 0
 
     # iterate through the earthquakes to find the max magintude
+    # should also have been able to handle earthquakes with the same mag
     for earthquake in data["features"]:
         if get_magnitude(earthquake) > maxMag:
             # assign the values to the variables
@@ -73,3 +75,20 @@ max_magnitude, max_location = get_maximum(data)
 print(f"The strongest earthquake was at {max_location} with magnitude {max_magnitude}")
 
 # The strongest earthquake was at [-2.15, 52.52] with magnitude 4.8
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# create a dictionary where the keys are the years
+# for each year, look at every eathquake
+# if the year is equal then append the magnitude to the year 
