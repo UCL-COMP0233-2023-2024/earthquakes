@@ -71,6 +71,14 @@ def get_magnitudes_per_year(earthquakes):
             year_dict[get_year(earth)] = [get_magnitude(earth)]
     return year_dict
 
+def get_number_per_year(earthquakes):
+    year_dict={}
+    for quake in earthquakes:
+        if get_year(quake) in year_dict:
+            year_dict[get_year(quake)] += 1
+        else:
+            year_dict[get_year(quake)] = 1
+    return year_dict
 
 def plot_average_magnitude_per_year(earthquakes):
     dict = get_magnitudes_per_year(earthquakes)
@@ -87,6 +95,7 @@ def plot_average_magnitude_per_year(earthquakes):
         for mag in mag_list:
             value += mag
         avg_list.append(value/len(mag_list))
+
     year_list=np.array(year_list)
     avg_list = np.array(avg_list)
     print(year_list,avg_list)
@@ -95,13 +104,18 @@ def plot_average_magnitude_per_year(earthquakes):
     plt.xlabel('Year')
     plt.xticks(year_list,rotation=45)
     plt.ylabel('Average magnitude')
-    plt.show()
+    # plt.show()
 
 def plot_number_per_year(earthquakes):
-    ...
+    year_list = list(get_number_per_year(earthquakes).keys())
+    num_list = list(get_number_per_year(earthquakes).values())
+    plt.title('Number of earthquakes per year')
+    plt.plot(year_list,num_list, color='blue')
+    # plt.show()
 
 
-print(plot_average_magnitude_per_year(get_data()['features']))
+plot_average_magnitude_per_year(get_data()['features'])
+plot_number_per_year(get_data()['features'])
 
 # # Get the data we will work with
 # quakes = get_data()['features']
