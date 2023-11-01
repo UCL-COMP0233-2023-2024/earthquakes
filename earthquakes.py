@@ -1,3 +1,4 @@
+plots-@NDiurno94-@Giselletyj-@Kathytangtx
 import json
 # The Python standard library includes some functionality for communicating
 # over the Internet.
@@ -5,6 +6,8 @@ import json
 # This is external library that you may need to install first.
 import requests
 import datetime
+import requests
+import json
 
 
 def get_data():
