@@ -1,3 +1,11 @@
+plots-@NDiurno94-@Giselletyj-@Kathytangtx
+import json
+# The Python standard library includes some functionality for communicating
+# over the Internet.
+# However, we will use a more powerful and simpler library called requests.
+# This is external library that you may need to install first.
+import requests
+import datetime
 import requests
 import json
 
@@ -18,13 +26,13 @@ def get_data():
             "orderby": "time-asc"}
     )
 
+
     # The response we get back is an object with several fields.
     # The actual contents we care about are in its text field:
     text = response.text
     # To understand the structure of this text, you may want to save it
     # to a file and open it in VS Code or a browser.
     # See the README file for more information.
-    ...
 
     # We need to interpret the text to get values that we can work with.
     # What format is the text in? How can we load the values?
@@ -75,3 +83,26 @@ data = get_data()
 print(f"Loaded {count_earthquakes(data)}")
 max_magnitude, max_location = get_maximum(data)
 print(f"The strongest earthquake was at {max_location} with magnitude {max_magnitude}")
+
+def time_earthquakes(data):
+    time = [] 
+    for earthquake in data["features"]:
+        t = datetime.datetime.fromtimestamp(earthquake["properties"]["time"] //1000).strftime("%Y-%m-%d")
+        time.append(t)
+    return time
+
+dates = time_earthquakes(data)
+print(dates)
+
+def count_events_in_time_range(event_times, start_time, end_time):
+    event_count = 0
+    for time in event_times:
+        if start_time <= time <= end_time:
+            event_count += 1
+    return event_count
+
+event_times = dates
+start_time = "2002"
+end_time = "2003"
+count = count_events_in_time_range(event_times, start_time, end_time)
+print(f"Number of events between {start_time} and {end_time}: {count}")
