@@ -1,13 +1,11 @@
-# The Python standard library includes some functionality for communicating
-# over the Internet.
-# However, we will use a more powerful and simpler library called requests.
-# This is external library that you may need to install first.
-import requests
+from datetime import date
 
+import matplotlib.pyplot as plt
+import json
+import requests
+import itertools
 
 def get_data():
-    # With requests, we can ask the web service for the data.
-    # Can you understand the parameters we are passing here?
     response = requests.get(
         "http://earthquake.usgs.gov/fdsnws/event/1/query.geojson",
         params={
@@ -21,41 +19,179 @@ def get_data():
             "orderby": "time-asc"}
     )
 
-    # The response we get back is an object with several fields.
-    # The actual contents we care about are in its text field:
     text = response.text
-    # To understand the structure of this text, you may want to save it
-    # to a file and open it in VS Code or a browser.
-    # See the README file for more information.
-    ...
+    result = json.loads(text)
+    return result
 
-    # We need to interpret the text to get values that we can work with.
-    # What format is the text in? How can we load the values?
-    return ...
 
+full_data = get_data()
+earthquake_features = get_data()['features']
+
+
+def get_year(earthquake):
+    """Extract the year in which an earthquake happened"""
+    timestamp = earthquake['properties']['time']
+    year = date.fromtimestamp(timestamp/1000).year
+    return year
+
+
+    
+    
 def count_earthquakes(data):
     """Get the total number of earthquakes in the response."""
-    return ...
+    count = data['metadata']['count']
+    return count
+
+count_earthquakes(full_data)
+
+def get_magnitude(result):
+    """Retrieve the magnitude of an earthquake item."""
+    magnitude = result['properties']['mag']
+    #print(magnitude)
+    return magnitude
 
 
-def get_magnitude(earthquake):
-    """Retrive the magnitude of an earthquake item."""
-    return ...
+
+def get_magnitudes_per_year(earthquakes):
+    "Retrieve the magnitudes of all earthquakes in a given year"
+    years = get_year(earthquakes)
+    
+
+years = []
+magnitudes = []
+locations = []
+
+for earthquake in earthquake_features:
+    magnitude = earthquake['properties']['mag']
+    year = get_year(earthquake)
+    location=earthquake['geometry']['coordinates'][:2]
+    years.append(year)
+    magnitudes.append(magnitude)
+    locations.append(location)
+    
+
+mag_with_loc = list(zip(magnitudes,locations))
 
 
-def get_location(earthquake):
-    """Retrieve the latitude and longitude of an earthquake item."""
-    # There are three coordinates, but we don't care about the third (altitude)
-    return ...
+groupedBy = [(key, [num for _, num in value])
+    for key, value in itertools.groupby(sorted(mag_with_loc), lambda x: x[0])]
+
+print(groupedBy[-1])
+
+max_mag_with_locations = groupedBy[-1]
+max_magnitude, max_locations = max_mag_with_locations[0],max_mag_with_locations[1]
+print(f"The strongest earthquakes were at locations {max_locations[0]} and {max_locations[1]} with magnitude {max_magnitude}")
 
 
-def get_maximum(data):
-    """Get the magnitude and location of the strongest earthquake in the data."""
-    ...
+earthquake_features = get_data()['features']
+mag_with_loc = list(zip(magnitudes,locations))
+
+#print(mag_with_loc)
+
+#This is an alternative function that will find the maximum, preserving multiple maxima when present
+#however this will not contain the location
+def max_finder_with_duplicates(earthquake_features):
+    max_mag = 0
+    max_mag_vec = [max_mag]
+    for earthquake in earthquake_features:
+        magnitude = earthquake['properties']['mag']
+        if magnitude>max_mag:  
+            max_mag_vec.clear()
+            max_mag_vec.append(magnitude)
+            max_mag=magnitude
+        elif magnitude == max_mag:
+            for vec in max_mag_vec:
+                if magnitude>vec:
+                    max_mag_vec.remove(vec)
+            max_mag_vec.append(magnitude)
+            max_mag=magnitude
+        print(max_mag_vec)    
+    return max_mag_vec
+
+#max_finder_with_duplicates(earthquake_features)
+
+full_data = get_data()
+earthquake_features = get_data()['features']
 
 
-# With all the above functions defined, we can now call them and get the result
-data = get_data()
-print(f"Loaded {count_earthquakes(data)}")
-max_magnitude, max_location = get_maximum(data)
-print(f"The strongest earthquake was at {max_location} with magnitude {max_magnitude}")
+def get_year(earthquake):
+    """Extract the year in which an earthquake happened"""
+    timestamp = earthquake['properties']['time']
+    year = date.fromtimestamp(timestamp/1000).year
+    return year
+
+
+years = []
+magnitudes = []
+locations = []
+
+for earthquake in earthquake_features:
+    magnitude = earthquake['properties']['mag']
+    year = get_year(earthquake)
+    location=earthquake['geometry']['coordinates'][:2]
+    years.append(year)
+    magnitudes.append(magnitude)
+    locations.append(location)
+    
+
+mag_with_loc = list(zip(magnitudes,locations))
+
+years_with_mag_with_loc = list(zip(years,magnitudes,locations))
+#print(years_with_mag_with_loc)
+    
+years_with_mag = list(zip(years,magnitudes))
+
+maxed = [(key, max(num for _, num in value))
+    for key, value in itertools.groupby(years_with_mag, lambda x: x[0])]    
+
+
+
+years_with_mag_with_loc = list(zip(years,magnitudes,locations))
+    
+years_with_mag = list(zip(years,magnitudes))
+
+result = {}
+for key, value in itertools.groupby(sorted(years_with_mag), lambda x: x[0]):
+    values = list(num for _, num in value)
+    result[key]=(sum(values)/len(values))
+
+averaged = [(k, v) for k, v in result.items()]
+
+print("\nAverage earthquake magnitude per year")
+print(averaged)
+
+x=[]
+y=[]
+
+for el in averaged:
+    x.append(el[0])
+    y.append(el[1])
+    
+#print(x,y)   
+fig,ax = plt.subplots()
+rects = ax.bar(x,y)
+ax.set_xticks([ind for ind in x])
+plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment='center')
+plt.legend(['Average magnitude per year'],loc=1, prop={'size': 6});
+plt.show()
+
+total = [(key, len(list(num for _, num in value)))
+    for key, value in itertools.groupby(sorted(years_with_mag), lambda x: x[0])]
+
+print("\nNumber of earthquakes per year")
+print(total)
+
+x2=[]
+y2=[]
+
+for el2 in total:
+    x2.append(el2[0])
+    y2.append(el2[1])
+    
+#print(x,y)   
+fig2,ax2 = plt.subplots()
+rects2 = ax2.bar(x2,y2)
+ax2.set_xticks([ind for ind in x])
+plt.setp(ax2.get_xticklabels(), rotation=30, horizontalalignment='center')
+plt.legend(['Num of earthquakes per year'],loc=1, prop={'size': 6});
+plt.show()
